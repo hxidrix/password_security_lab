@@ -10,7 +10,7 @@ type CardProps = {
   delay?: number
 }
 
-export function Card({ children, className, delay = 0 }: CardProps) {
+export function Card({ children, className, delay: _delay = 0 }: CardProps) {
   const cardVariants = {
     hidden: { opacity: 0, y: 12 },
     show: { opacity: 1, y: 0 },

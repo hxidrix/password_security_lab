@@ -43,8 +43,7 @@ export function BruteForceSimulation({
     const expectedGuesses = keyspaceSize / 2
 
     // Attacker capability (chosen for demo clarity)
-    const guessesPerSecond =
-      mode === 'online' ? 100 : 1_000_000_000
+    // (explicit per-profile rates used below; no single variable needed here)
 
     // Cap animation so UI remains responsive
     const animationDurationMs = 3000
