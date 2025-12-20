@@ -1,9 +1,12 @@
 {
-  "name": "ai-password-security-dashboard",
+  "name": "password-security-lab",
   "private": true,
   "workspaces": [
     "apps/web"
   ],
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "dev": "npm run dev -w web",
     "build": "npm run build -w web",
