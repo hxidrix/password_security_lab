@@ -1,0 +1,13 @@
+{
+  "name": "ai-password-security-dashboard",
+  "private": true,
+  "workspaces": [
+    "apps/web"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w web",
+    "build": "npm run build -w web",
+    "lint": "npm run lint -w web"
+  },
+  "devDependencies": {}
+}
