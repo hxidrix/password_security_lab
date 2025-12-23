@@ -1,5 +1,6 @@
 // Comprehensive list of 100k+ common passwords from real breaches (realistic attack vectors)
 function buildCommonPasswordsList(): string[] {
+  const MAX_COMMON_PASSWORDS = 1000000 // target cap (increase as requested)
   const basePasswords = [
     'password', '123456', '123456789', '12345678', 'qwerty', 'abc123', 'letmein',
     'admin', 'welcome', 'iloveyou', 'monkey', 'dragon', 'football', 'baseball',
@@ -15,11 +16,11 @@ function buildCommonPasswordsList(): string[] {
   }
 
   // Add numeric suffix variants (very common in breaches)
-  const yearSuffixes = Array.from({ length: 60 }, (_, i) => (1960 + i).toString())
+  const yearSuffixes = Array.from({ length: 120 }, (_, i) => (1900 + i).toString())
   
   for (const base of basePasswords) {
-    for (let i = 0; i < 100; i++) {
-      if (variants.size >= 100000) break
+    for (let i = 0; i < 2000; i++) {
+      if (variants.size >= MAX_COMMON_PASSWORDS) break
       variants.add(`${base}${i}`)
       variants.add(`${base}${String(i).padStart(2, '0')}`)
       variants.add(`${i}${base}`)
@@ -29,7 +30,7 @@ function buildCommonPasswordsList(): string[] {
   // Add year variants (birthdate attacks)
   for (const base of basePasswords.slice(0, 10)) {
     for (const year of yearSuffixes) {
-      if (variants.size >= 100000) break
+      if (variants.size >= MAX_COMMON_PASSWORDS) break
       variants.add(`${base}${year}`)
       variants.add(`${year}${base}`)
       variants.add(`${base}${year.slice(2)}`)
@@ -40,7 +41,7 @@ function buildCommonPasswordsList(): string[] {
   const specialChars = ['!', '@', '#', '$', '%', '&', '*', '-', '_', '=', '+']
   for (const base of basePasswords) {
     for (const char of specialChars) {
-      if (variants.size >= 100000) break
+      if (variants.size >= MAX_COMMON_PASSWORDS) break
       variants.add(`${base}${char}`)
       variants.add(`${base}!`)
     }
@@ -74,15 +75,19 @@ function buildCommonPasswordsList(): string[] {
     variants.add(leet(`${base}123`))
   }
 
-  const arr = Array.from(variants).slice(0, 100000)
+  const arr = Array.from(variants).slice(0, MAX_COMMON_PASSWORDS)
   return arr
 }
 
 export const COMMON_PASSWORDS = buildCommonPasswordsList()
 
+// Fast lookup maps for simulation performance: word -> first index
+export const COMMON_PASSWORDS_INDEX = new Map(COMMON_PASSWORDS.map((w, i) => [w, i]))
+
 // Build a large dictionary (~100k+ entries) with advanced patterns and comprehensive word list.
 // Uses word combinations, leet variants, numeric suffixes and common English words.
 function buildLargeDictionary(): string[] {
+  const MAX_COMMON_WORDS = 1000000 // target cap (increase as requested)
   // Comprehensive seed of common English words (NOT passwords, just words)
   const seed = [
     // Common nouns
@@ -146,10 +151,10 @@ function buildLargeDictionary(): string[] {
       .replace(/s/gi, '5')
 
   // Compound words and combinations
-  const smallWords = seed.slice(0, 40)
-  for (let i = 0; i < Math.min(100, smallWords.length); i++) {
-    for (let j = i + 1; j < Math.min(i + 5, smallWords.length); j++) {
-      if (variants.size >= 100000) break
+  const smallWords = seed.slice(0, 80)
+  for (let i = 0; i < Math.min(400, smallWords.length); i++) {
+    for (let j = i + 1; j < Math.min(i + 50, smallWords.length); j++) {
+      if (variants.size >= MAX_COMMON_WORDS) break
       variants.add(`${smallWords[i]}${smallWords[j]}`)
       variants.add(`${smallWords[i]}_${smallWords[j]}`)
       variants.add(`${smallWords[i]}-${smallWords[j]}`)
@@ -162,7 +167,7 @@ function buildLargeDictionary(): string[] {
 
   for (const prefix of prefixes) {
     for (const suffix of suffixes) {
-      for (let i = 0; i < seed.length && variants.size < 85000; i++) {
+      for (let i = 0; i < seed.length && variants.size < MAX_COMMON_WORDS; i++) {
         const w = seed[i]
         variants.add(`${prefix}${w}${suffix}`.replace(/^[a-z]/, c => c.toUpperCase()))
         variants.add(`${w}${suffix}`)
@@ -177,7 +182,7 @@ function buildLargeDictionary(): string[] {
   const years = ['1980', '1990', '2000', '2010', '2020', '2021', '2022', '2023', '2024']
   for (const w of seed.slice(0, 50)) {
     for (const year of years) {
-      if (variants.size >= 100000) break
+      if (variants.size >= MAX_COMMON_WORDS) break
       variants.add(`${w}${year}`)
       variants.add(`${year}${w}`)
       variants.add(`${w}${year.slice(2)}`)
@@ -185,17 +190,21 @@ function buildLargeDictionary(): string[] {
   }
 
   // Extended numeric sequences
-  for (let i = 0; i < 2000 && variants.size < 100000; i++) {
+  for (let i = 0; i < 50000 && variants.size < MAX_COMMON_WORDS; i++) {
     const randomWord = seed[i % seed.length]
     variants.add(`${randomWord}${i}`)
     variants.add(`${i}${randomWord}`)
     if (i % 2 === 0) variants.add(`${randomWord}${String(i).padStart(3, '0')}`)
     if (i % 3 === 0) variants.add(`${randomWord}${String(i).padStart(4, '0')}`)
+    if (i % 5 === 0) variants.add(`${randomWord}${String(i).padStart(5, '0')}`)
   }
 
   // Deterministic ordering and cap at 100k
-  const arr = Array.from(variants).slice(0, 100000)
+  const arr = Array.from(variants).slice(0, MAX_COMMON_WORDS)
   return arr
 }
 
 export const COMMON_WORDS = buildLargeDictionary()
+
+// Fast lookup maps for simulation performance: word -> first index
+export const COMMON_WORDS_INDEX = new Map(COMMON_WORDS.map((w, i) => [w, i]))

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { ProgressBar } from '../../components/ui/ProgressBar'
-import { COMMON_WORDS, COMMON_PASSWORDS } from '../../utils/password/common'
+import { COMMON_WORDS, COMMON_PASSWORDS, COMMON_WORDS_INDEX, COMMON_PASSWORDS_INDEX } from '../../utils/password/common'
 
 type SimulationMode = 'passwords' | 'words'
 
@@ -45,23 +45,44 @@ export function DictionaryAttackSimulation({ password }: { password: string }) {
     setPasswordSim({ index: 0, running: true, found: false })
 
     if (passwordTimerRef.current) window.clearInterval(passwordTimerRef.current)
+    // Fast-path: if password exists in the list, compute its index and animate quickly to it.
+    const targetIndex = COMMON_PASSWORDS_INDEX.get(password.toLowerCase())
+    if (typeof targetIndex === 'number') {
+      // Animate in larger steps to reach target quickly while keeping UI responsive.
+      const steps = 200
+      const guessesPerTick = Math.max(1, Math.floor(targetIndex / steps))
+      passwordTimerRef.current = window.setInterval(() => {
+        setPasswordSim((prev) => {
+          const next = Math.min(COMMON_PASSWORDS.length, prev.index + guessesPerTick)
+          if (next >= targetIndex) {
+            if (passwordTimerRef.current) window.clearInterval(passwordTimerRef.current)
+            return { index: targetIndex, running: false, found: true }
+          }
+          return { ...prev, index: next }
+        })
+      }, 16)
+      return
+    }
 
+    // Fallback: batch through the list in larger increments to speed up simulation
+    const guessesPerTick = 50
     passwordTimerRef.current = window.setInterval(() => {
       setPasswordSim((prev) => {
-        const guess = COMMON_PASSWORDS[prev.index]
-        if (guess && guess === password.toLowerCase()) {
-          if (passwordTimerRef.current) window.clearInterval(passwordTimerRef.current)
-          return { ...prev, running: false, found: true }
-        }
-
-        const next = prev.index + 1
+        const next = Math.min(COMMON_PASSWORDS.length, prev.index + guessesPerTick)
         if (next >= COMMON_PASSWORDS.length) {
           if (passwordTimerRef.current) window.clearInterval(passwordTimerRef.current)
           return { ...prev, index: COMMON_PASSWORDS.length, running: false }
         }
+        // Check slice for exact match to avoid per-item comparisons when possible
+        for (let i = prev.index; i < next; i++) {
+          if (COMMON_PASSWORDS[i] === password.toLowerCase()) {
+            if (passwordTimerRef.current) window.clearInterval(passwordTimerRef.current)
+            return { index: i, running: false, found: true }
+          }
+        }
         return { ...prev, index: next }
       })
-    }, 80)
+    }, 16)
   }
 
   function startWordSimulation() {
@@ -69,23 +90,42 @@ export function DictionaryAttackSimulation({ password }: { password: string }) {
     setWordSim({ index: 0, running: true, found: false })
 
     if (wordTimerRef.current) window.clearInterval(wordTimerRef.current)
+    // Fast-path: if password exists in the dictionary, compute its index and animate quickly to it.
+    const targetIndex = COMMON_WORDS_INDEX.get(password.toLowerCase())
+    if (typeof targetIndex === 'number') {
+      const steps = 200
+      const guessesPerTick = Math.max(1, Math.floor(targetIndex / steps))
+      wordTimerRef.current = window.setInterval(() => {
+        setWordSim((prev) => {
+          const next = Math.min(COMMON_WORDS.length, prev.index + guessesPerTick)
+          if (next >= targetIndex) {
+            if (wordTimerRef.current) window.clearInterval(wordTimerRef.current)
+            return { index: targetIndex, running: false, found: true }
+          }
+          return { ...prev, index: next }
+        })
+      }, 16)
+      return
+    }
 
+    // Fallback: batch through the list
+    const guessesPerTick = 100
     wordTimerRef.current = window.setInterval(() => {
       setWordSim((prev) => {
-        const guess = COMMON_WORDS[prev.index]
-        if (guess && guess === password.toLowerCase()) {
-          if (wordTimerRef.current) window.clearInterval(wordTimerRef.current)
-          return { ...prev, running: false, found: true }
-        }
-
-        const next = prev.index + 1
+        const next = Math.min(COMMON_WORDS.length, prev.index + guessesPerTick)
         if (next >= COMMON_WORDS.length) {
           if (wordTimerRef.current) window.clearInterval(wordTimerRef.current)
           return { ...prev, index: COMMON_WORDS.length, running: false }
         }
+        for (let i = prev.index; i < next; i++) {
+          if (COMMON_WORDS[i] === password.toLowerCase()) {
+            if (wordTimerRef.current) window.clearInterval(wordTimerRef.current)
+            return { index: i, running: false, found: true }
+          }
+        }
         return { ...prev, index: next }
       })
-    }, 80)
+    }, 16)
   }
 
   const currentSim = mode === 'passwords' ? passwordSim : wordSim
