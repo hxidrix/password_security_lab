@@ -53,14 +53,14 @@ body {
 .btn:focus { outline: 2px solid rgba(56,189,248,0.24); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .btn, .glow-hover, .glow-hover-main { transition: none !important; animation: none !important; } }
 
-/* Glowing title utility (subtle white glow) */
-.glow-title { text-shadow: 0 0 6px rgba(255,255,255,0.72), 0 0 12px rgba(255,255,255,0.28); }
+/* Glowing title utility (reduced/subtle white glow) */
+.glow-title { text-shadow: 0 0 3px rgba(255,255,255,0.56), 0 0 6px rgba(255,255,255,0.18); }
 
 /* Animated hover glow for titles */
 @keyframes glowPulse {
-  0% { text-shadow: 0 0 6px rgba(255,255,255,0.7), 0 0 12px rgba(255,255,255,0.28); transform: translateY(0); }
-  50% { text-shadow: 0 0 10px rgba(255,255,255,0.9), 0 0 18px rgba(255,255,255,0.45); transform: translateY(-1px); }
-  100% { text-shadow: 0 0 6px rgba(255,255,255,0.7), 0 0 12px rgba(255,255,255,0.28); transform: translateY(0); }
+  0% { text-shadow: 0 0 3px rgba(255,255,255,0.6), 0 0 6px rgba(255,255,255,0.18); transform: translateY(0); }
+  50% { text-shadow: 0 0 5px rgba(255,255,255,0.75), 0 0 9px rgba(255,255,255,0.28); transform: translateY(-1px); }
+  100% { text-shadow: 0 0 3px rgba(255,255,255,0.6), 0 0 6px rgba(255,255,255,0.18); transform: translateY(0); }
 }
 
 .glow-hover { transition: text-shadow 180ms ease, transform 180ms ease; }
@@ -74,7 +74,7 @@ body {
 
 /* Main title soft backdrop and subtle animated glow */
 .main-title { position: relative; display:inline-block; padding:0.1rem 0.25rem; border-radius:0.4rem }
-.main-title::before { content: ''; position: absolute; left: -10%; right: -10%; top: -30%; bottom: -20%; z-index: -1; background: radial-gradient(ellipse at center, rgba(255,255,255,0.05), transparent 40%); filter: blur(12px); opacity: 0.7; border-radius: 8px; transition: opacity 220ms ease; }
+.main-title::before { content: ''; position: absolute; left: -10%; right: -10%; top: -30%; bottom: -20%; z-index: -1; background: radial-gradient(ellipse at center, rgba(255,255,255,0.04), transparent 40%); filter: blur(8px); opacity: 0.5; border-radius: 8px; transition: opacity 220ms ease; }
 .main-title.glow-animated::before { animation: glowPulse 2.6s ease-in-out infinite; }
 
 /* Card glass subtle inner highlight */
