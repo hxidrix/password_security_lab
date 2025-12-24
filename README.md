@@ -25,7 +25,7 @@ An educational dashboard for learning and demonstrating password security concep
 ## 📁 Project Structure
 
 ```
-ai-password-security-dashboard/
+password-security-dashboard/
 ├── apps/
 │   └── web/                          # React frontend
 │       ├── src/
