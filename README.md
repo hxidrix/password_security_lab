@@ -1,4 +1,4 @@
-﻿# Password Security & Attack Simulation Dashboard
+﻿# Password Security & Attack Simulation Lab
 
 An educational dashboard for learning and demonstrating password security concepts. Includes password strength analysis, hashing demonstrations, attack simulations and deterministic security analysis—all fully client-side.
 
@@ -25,7 +25,7 @@ An educational dashboard for learning and demonstrating password security concep
 ## 📁 Project Structure
 
 ```
-password-security-dashboard/
+password-security-lab/
 ├── apps/
 │   └── web/                          # React frontend
 │       ├── src/
